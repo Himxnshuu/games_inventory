@@ -8,17 +8,18 @@ export default function Settings() {
 
   return (
     <div className="relative flex items-center">
-        <button
-        onClick={() => setOpen(!open)}
-        className="px-4 py-2 text-center"
-      >
-       ⚙️
-      </button>
+        <form action="/api/auth/logout" method="POST">
+            <button
+              className=" text-left hover:bg-red-600 px-3 py-2 rounded bg-white/30 mx-20"
+            >
+               Logout
+            </button>
+          </form>
         <Link
             href="/wishlist"
-            className="hover:bg-gray-700 px-3 py-2 rounded"
+            className="hover:bg-green-400 hover:text-black px-3 py-2 rounded"
           >
-            💟 Wishlist
+             Wishlist
           </Link>
       
 
@@ -34,13 +35,7 @@ export default function Settings() {
 
           
 
-          <form action="/api/logout" method="POST">
-            <button
-              className="w-full text-left hover:bg-red-600 px-3 py-2 rounded"
-            >
-              🚪 Logout
-            </button>
-          </form>
+          
 
         </div>
       )}
