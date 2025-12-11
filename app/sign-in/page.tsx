@@ -25,7 +25,8 @@ import { redirect } from 'next/navigation'
         const data=await res.json();
         redirect('/list')
     }
-    
+
+
 
     return (
         <div className='h-screen'>
