@@ -3,8 +3,7 @@ import {cookies} from 'next/headers'
 import jwt from 'jsonwebtoken'
 import {query} from '@/lib/db'
 import Image from 'next/image'
-
-
+import { revalidatePath } from 'next/cache'
 const page = async () => {
     const cookieStore=await cookies()
         const token :any=cookieStore.get('authToken')?.value;
@@ -18,12 +17,18 @@ const page = async () => {
 
     const data=res.rows
 
+    const removeFromWishlist = async (id:any)=>{
+        "use server"
+        await query("DELETE FROM wishlist WHERE game_id=$1 AND user_id=$2",[id,userId])
+        console.log(`game removed: ${id}`)
+        revalidatePath("/wishlist")
+    }
 
 
   return (
     <div>
 
-    <h1 className='text-4xl text-center m-10'>Wishlist</h1>
+    <h1 className='text-4xl text-center m-10 bg-accent px-4 py-2 rounded'>Wishlist</h1>
     <div className='grid grid-cols-3 '>
         {
             data.map((elem:any)=>(
@@ -33,11 +38,15 @@ const page = async () => {
                     <Image
                     src={elem.thumbnail_url}
                     alt='cover'
-                    width={300}
+                    width={400}
                     height={300}
                     />
-                    <h1>{elem.game}</h1>
-
+                    <div className='flex flex-row gap-2 mt-10'>
+                    <h1 className='px-4 py-2 font-serif'>{elem.game}</h1>
+                    <form action={removeFromWishlist.bind(null,elem.game_id)}>
+                        <button className='bg-pink-900 rounded px-4 py-2' type='submit'>Remove from wishlist</button>
+                    </form>
+                    </div>
                     </div>
                 </div>
             ))

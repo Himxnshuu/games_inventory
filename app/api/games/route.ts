@@ -6,7 +6,7 @@ export async function GET(request: Request){
     
     
 
-    const res=await query("SELECT * FROM games LIMIT 5 ")
+    const res=await query("SELECT * FROM games")
     const data=res.rows
     return NextResponse.json(data);
     }catch(err){

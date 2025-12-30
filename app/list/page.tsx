@@ -1,5 +1,7 @@
 // 'use client'
 // import React, { useEffect,useState } from 'react'
+
+import {query} from '@/lib/db'
 import Image from 'next/image';
 import Pagination from './Pagination';
 import Settings from './Settings';
@@ -28,7 +30,7 @@ import { NextResponse } from 'next/server';
         const data=await res.json()
         console.log(data)
     }  
-const list =  async () => {
+const list =  async ({searchParams}:{searchParams:Promise<{page:string}>}) => {
     // const [data,setData]=useState([])
     // const fetchGames=async ()=>{
     //     const res=await fetch('http://localhost:3000/api/games');
@@ -40,13 +42,22 @@ const list =  async () => {
     
     // },[])
 
-    const res=await fetch('http://localhost:3000/api/games')
-    const data=await res.json()
+    //const res=await fetch('http://localhost:3000/api/games')
+    const resolvedParams=await searchParams
+    const page= Number(resolvedParams?.page) || 1;
+    const limit=6;
+    const offset=(page-1)*limit;
+    
+    const countRes = await query("SELECT COUNT(*) FROM games");
+    const total = Number(countRes.rows[0].count);
+    const totalPages = Math.ceil(total / limit);
+    const res= await query("SELECT * FROM games LIMIT $1 OFFSET $2",[limit,offset])
+    const data=res.rows
     
     
   return (
     <div className='min-h-screen'>
-        <div className='flex flex-row justify-between m-10 text-center text-4xl bg-accent px-4 py-2'>
+        <div className='flex flex-row justify-between m-10 text-center  bg-accent px-4 py-2 rounded'>
         <h1 className='px-4 py-2'>Catalog</h1>
         <Settings/>
         </div>
@@ -65,6 +76,7 @@ const list =  async () => {
                         <div className='flex flex-row justify-center items-center gap-2 mt-10'>
                         <h2 className='text-center font-serif px-4 py-2'>{elem.game}</h2>
                         <form action={addToWishlist.bind(null,elem.game_id)}>
+                            
                             <button className='bg-pink-900 rounded px-4 py-2' type='submit' >Add to Wishlist</button>
                         </form>
                         </div>
@@ -73,7 +85,7 @@ const list =  async () => {
                 ))
             }
         </div>
-        <Pagination/>
+        <Pagination totalPages={totalPages}/>
         
             
         
